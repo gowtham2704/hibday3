@@ -1,0 +1,435 @@
+1:Create a Hibernate Application Product Management System. (Create/ Use database PMS).
+
+Tasks
+Create a Product Management System using the Powerful features of Hibernate.
+
+packages and classes to be created
+
+The following template is given
+-------------------------
+
+com.dsrc.view
+		MenuScreen		
+com.dsrc.service
+		DataValidator		
+com.dsrc.model
+		Product		
+com.dsrc.dao
+		HibernateUtil
+com.dsrc.exceptions
+		ProductException
+com.dsrc.executer
+		MyMain
+
+
+Task:
+1. Add a method in MenuScreen called showMenu with return type integer , display a menu and return the choice selected
+
+showMenu.. output
+----------------------
+Select Your Option
+1. Product
+2. Sales
+3. Staff
+4. Customer
+
+Enter your Choice : 
+-----------------------
+2. If the choice is 1 , See the  task in  Product.txt file. 
+
+Product.txt
+**********
+TasK:
+1. Go to ProuctController Class , productManage() method.
+
+2. call the showProductMenu() method of ProductScreen class.
+
+3 .the method should display the following.
+--------------------------------
+PRODUCT MENU
+-------------
+1. New Product
+2. Edit Product
+3. Delete Product
+4. List Product
+5. Search Product
+6. Exit.
+
+Enter Your Choice :
+
+--------------------------------
+If the choice is 1 , Show the following.
+--------------------------------
+Enter Product ID : 101
+Enter Product Name : ??
+Enter ProductPrice :??
+
+Product Added Successfully .
+---------------------------------
+And go back to Product Menu
+
+Tasks:
+a) Create productid, productname ,price variables in the Product bean , generate the Getters and Setters
+b) The values getting form user, assign to Prouct bean.
+c) Pass the Prodcut object to DataValidators validateProduct() method.
+d) validateProduct() should call  HibernateUtils saveProduct() method and pass the product object as argument.
+e) Write the hibernate code for saving product details into database inside saveProduct() method.
+
+Note : The project skeleton is given.
+
+
+MenuScreen.java:
+*******************
+package com.dsrc.view;
+
+import java.util.Scanner;
+
+import com.dsrc.service.ProductController;
+
+public class MenuScreen
+{
+
+	public int showMenu() {
+	Scanner in=new Scanner(System.in);
+	System.out.println("Select your Choice:");
+	System.out.println("1:Product");
+	System.out.println("2:Sales");
+	System.out.println("3:Staff");
+	System.out.println("4:Customer");
+	System.out.println("Enter your Choice:");
+	int choice=in.nextInt();
+	switch(choice){
+	case 1:
+		ProductController pc=new ProductController();
+		pc.productManage();
+	}
+		return choice;
+	}
+
+}
+
+****
+ProductController.java:
+***********************
+package com.dsrc.service;
+
+import com.dsrc.view.ProductScreen;
+
+public class ProductController
+{
+		public int productManage()
+		{ProductScreen ps =new ProductScreen();
+		ps.shoeProductScreen();
+			return 0;
+		}
+}
+****
+ProductScreen.java:
+***************************
+package com.dsrc.view;
+
+import java.util.Scanner;
+
+import com.dsrc.model.Product;
+import com.dsrc.service.DataValidator;
+
+public class ProductScreen 
+{
+		public int shoeProductScreen()
+		{			 Scanner in = new Scanner(System.in);
+	       System.out.println("PRODUCT MENU");
+	        System.out.println("1\t New Product");
+	        System.out.println("2\t Edit Product");
+	        System.out.println("3\t Delete Product");
+	        System.out.println("4\t List Product");
+	        System.out.println("5\t Search Product");
+	        System.out.println("6\t Exit\t");
+	        System.out.println("Enter Your Choice:");
+	        int choice =in.nextInt();
+	        switch(choice){
+	        case 1:
+		        System.out.println("Enter ProductId:");
+                 int a=in.nextInt();
+                System.out.println("Enter ProductName:");
+                String b=in.next();
+	        System.out.println("Enter ProductPrice");
+                float c=in.nextFloat();
+                
+                Product product=new Product(a,b,c);
+                DataValidator dv=new DataValidator();
+                dv.validateProduct(product);
+	        }
+
+			return choice;
+		}
+}
+****
+Product.java:
+*****************************
+package com.dsrc.model;
+
+import javax.persistence.*;
+@Entity
+@Table(name= "Product")
+public class Product {
+@Id
+@Column(name="product_id")
+private int productid;
+@Column(name="product_name")
+private String productname;
+@Column(name="price")
+private float price;
+public int getProductid() {
+	return productid;
+}
+public void setProductid(int productid) {
+	this.productid = productid;
+}
+public String getProductname() {
+	return productname;
+}
+public void setProductname(String productname) {
+	this.productname = productname;
+}
+public float getPrice() {
+	return price;
+}
+public void setPrice(float price) {
+	this.price = price;
+}
+public Product(int productid, String productname, float price) {
+	this.productid=productid;
+	this.productname=productname;
+	this.price=price;
+}
+}
+****
+DataValidator.java:
+*********************************
+package com.dsrc.service;
+
+import com.dsrc.dao.HibernateUtil;
+import com.dsrc.model.Product;
+import com.dsrc.view.ProductScreen;
+
+public class DataValidator 
+{
+	public boolean validateProduct(Product product)
+	{HibernateUtil hu=new HibernateUtil();
+	boolean res=hu.saveProduct(product);
+	if(res)
+	{
+		System.out.println("Product Added Successfully");
+                    ProductScreen p=new ProductScreen();
+		p.shoeProductScreen();
+	}
+	return res;
+	}
+}
+****
+hibernate.cfg.xml:
+********************************
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC  
+          "-//Hibernate/Hibernate Configuration DTD 3.0//EN"  
+          "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">  
+  
+<hibernate-configuration>  
+  
+    <session-factory>  
+        <property name="hbm2ddl.auto">update</property>  
+        <property name="dialect">org.hibernate.dialect.MySQLDialect</property>  
+        <property name="connection.url">jdbc:mysql://localhost:3306/van</property>  
+        <property name="connection.username">root</property>  
+        <property name="connection.password">dsrc</property>  
+        <property name="connection.driver_class">com.mysql.jdbc.Driver</property>  
+            <mapping class="com.dsrc.model.Product"/>
+    
+    </session-factory>  
+  
+</hibernate-configuration>  
+****
+MyMain.java:
+*********************************
+package com.dsrc.executer;
+
+import com.dsrc.view.MenuScreen;
+
+public class MyMain 
+{
+		public static void main(String[] args) 
+		{
+			
+			MenuScreen m=new MenuScreen();
+			m.showMenu();
+	
+		}
+}
+****
+HibernateUtil.java:
+*************************************
+package com.dsrc.dao;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.AnnotationConfiguration;
+
+import com.dsrc.model.Product;
+
+public class HibernateUtil 
+{
+	public boolean saveProduct(Product product)
+	{SessionFactory sf=new AnnotationConfiguration().configure().addAnnotatedClass(Product.class).buildSessionFactory();
+	Session s=sf.openSession();
+	Transaction tc=s.beginTransaction();
+	s.save(product);
+	tc.commit();
+	return true;
+
+	}
+}
+*****
+*****
+*****
+*****
+
+2:All modules are same except some of the modules:
+*****
+DataVAlidator.JAava:
+*******
+package com.dsrc.service;
+
+import com.dsrc.dao.HibernateUtil;
+import com.dsrc.model.Product;
+import com.dsrc.view.ProductScreen;
+
+public class DataValidator 
+{
+	public boolean validateProduct(Product product)
+	{
+		// Code to call DAO..
+		return true;
+	}
+	public boolean updateProduct(Product product)
+	{
+		HibernateUtil hu=new HibernateUtil();
+		boolean res=hu.updateProduct(product);
+		try{
+		if(res)
+		{
+			System.out.println("Product Updated Successfully");
+			ProductScreen p=new ProductScreen();
+			p.shoeProductScreen();
+		}
+		}
+		catch(Exception e){
+			System.out.println("INVALID ID");
+		}
+		return res;
+		
+	}
+}
+****
+HibernateUtil.java
+****
+package com.dsrc.dao;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.AnnotationConfiguration;
+
+import com.dsrc.model.Product;
+
+public class HibernateUtil 
+{
+	public boolean saveProduct(Product product)
+	{
+		return true;
+	}
+	public boolean updateProduct(Product product)
+	{		SessionFactory sf=new AnnotationConfiguration().configure().addAnnotatedClass(Product.class).buildSessionFactory();
+	Session s=sf.openSession();
+	Transaction tc=s.beginTransaction();
+	s.update(product);
+	tc.commit();
+
+		return true;
+	}
+}
+****
+***************************************************************
+3:Same as Above except changes in some modules
+*************************************
+Hibernate.util.java
+******
+package com.dsrc.dao;
+
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.AnnotationConfiguration;
+
+import com.dsrc.model.Product;
+import com.dsrc.view.ProductScreen;
+
+public class HibernateUtil 
+{
+	public boolean saveProduct(Product product)
+	{
+		return true;
+	}
+	public boolean updateProduct(Product product)
+	{
+		return true;
+	}
+	public boolean deleteProduct(Product product){
+	try
+	{
+		SessionFactory sf=new AnnotationConfiguration().configure().addAnnotatedClass(Product.class).buildSessionFactory();
+	Session s=sf.openSession();
+	Transaction tc=s.beginTransaction();
+	s.delete(product);
+	tc.commit();	
+			System.out.println("Product Deleted Successfully");
+			ProductScreen p=new ProductScreen();
+			p.shoeProductScreen();	
+		}catch(Exception e){
+			System.out.println("INVALID ID");
+			ProductScreen p=new ProductScreen();
+			p.shoeProductScreen();
+		}
+		return true;
+
+	}
+}
+************
+DataValidator.java:
+***
+package com.dsrc.service;
+
+import com.dsrc.dao.HibernateUtil;
+import com.dsrc.model.Product;
+import com.dsrc.view.ProductScreen;
+
+public class DataValidator 
+{
+	public boolean validateProduct(Product product)
+	{
+		// Code to call DAO..
+		return true;
+	}
+	public boolean updateProduct(Product product)
+	{
+		return true;
+	}
+	public boolean deleteProduct(Product product)
+	{HibernateUtil hu=new HibernateUtil();
+	boolean res=hu.deleteProduct(product);
+	
+	return res;
+	}
+}
+****
+*******************************************************************
